@@ -1,11 +1,42 @@
 groups:
- - name: bdb-latency
+
+ - name: latency
    rules:
-   - alert: listener_acc_latency
-     expr: listener_acc_latency > 1
-     for: 1m
+   - alert: bdb_avg_latency-1ms
+     expr: bdb_avg_latency > 0.001
+     for: 30s
      labels:
        severity: notification
      annotations:
-       description: "High Latency - Cluster:{{ $labels.cluster }} Endpoint:{{$labels.endpoint}} Proxy:{{$labels.proxy}} "
-       runbook: http://www.mague.com
+       description: "High Latency - Cluster: {{ $labels.cluster }} DB: {{$labels.bdb}} Latency: {{$value}} seconds"
+       runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/latency.md
+   - alert: bdb_avg_latency-4ms
+     expr: bdb_avg_latency > 0.004
+     for: 30s
+     labels:
+       severity: critical
+     annotations:
+       description: "High Latency - Cluster: {{ $labels.cluster }} DB: {{$labels.bdb}} Latency: {{$value}} seconds"
+       runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/latency.md
+
+ - name: connections
+   rules:
+   - alert: zero_connections
+     expr: bdb_conns > 1
+     for: 30s
+     labels:
+       severity: notification
+     annotations:
+       description: "No Connections - Cluster: {{ $labels.cluster }} DB: {{$labels.bdb}} Connections: {{$value}}"
+       runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/connections.md
+
+ - name: capacity
+   rules:
+   - alert: bdb_avg_latency-1ms
+     expr: bdb_avg_latency > 0.001
+     for: 30s
+     labels:
+       severity: notification
+     annotations:
+       description: "High Latency - Cluster: {{ $labels.cluster }} DB: {{$labels.bdb}} Latency: {{$value}} seconds"
+       runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/connections.md

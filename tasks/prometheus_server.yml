@@ -30,6 +30,18 @@
     - prometheus
     - promtool
 
+
+# This needs to be before the config file or the validation will fail
+- name: rules config
+  copy:
+    src: prometheus_alerting_rules.yml
+    dest: "{{ prometheus_install_dir }}/etc/prometheus_alerting_rules.yml"
+    owner: root
+    group: root
+    mode: "0644"
+  notify:
+    - "prometheus_server_restart"
+
 - name: template prometheus server config
   template:
     src: prometheus.yml.j2
@@ -38,16 +50,6 @@
     group: prometheus
     mode: "0644"
     validate: "{{prometheus_install_dir}}/bin/promtool check config %s"
-  notify:
-    - "prometheus_server_restart"
-
-- name: rules config
-  copy:
-    src: prometheus_alerting_rules.yml
-    dest: "{{ prometheus_install_dir }}/etc/prometheus_alerting_rules.yml"
-    owner: root
-    group: root
-    mode: "0644"
   notify:
     - "prometheus_server_restart"
 
