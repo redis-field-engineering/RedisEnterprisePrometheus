@@ -9,8 +9,4 @@ Example monitoring setup for Prometheus
 ## Setup Data collection
 
 1. copy ansible/vars/main.yml.example to ansible/vars/main.yml and edit the file
-2. install the necessary Ansible modules
-```
-cd ansible && rm -rf roles/* && ansible-galaxy install --roles-path roles -r requirements.yml
-```
-3. vagrant up
+2. vagrant up --provision
