@@ -1,0 +1,34 @@
+---
+- hosts: all
+  become: yes
+  become_user: root
+  become_method: sudo
+  gather_facts: yes
+
+  vars:
+      mypkgs:
+        - htop
+        - iotop
+        - git
+        - ntp
+        - sysstat
+        - vim
+        - tmux
+        - tree
+        - tcpdump
+        - unzip
+
+  pre_tasks:
+    - name: Update Apt Cache
+      apt: 
+        update_cache: yes
+        cache_valid_time: 86400
+        force_apt_get: true
+    - name: Ubuntu Packages
+      apt:
+        pkg: "{{ mypkgs }}"
+        state: present
+        force_apt_get: true
+
+  roles:
+    - RedisEnterprisePrometheus

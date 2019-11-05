@@ -1,0 +1,27 @@
+---
+- name: Prometheus User
+  user:
+    name:    prometheus
+    comment: "Prometheus User"
+    shell:   /bin/false
+    state:   present
+    system:  yes
+
+- name: Ensure Prometheus Download Dir exists
+  file:
+    path: "{{prometheus_download_dir}}"
+    mode: 0755
+    state: directory
+
+- name: Ensure Prometheus App Dirs exist
+  file:
+    path: "{{prometheus_install_dir}}/{{item}}"
+    owner: prometheus
+    group: prometheus
+    mode:  0755
+    state: directory
+  with_items:
+    - etc
+    - bin
+    - log
+    - data

@@ -1,0 +1,5 @@
+---
+
+- { include: prometheus_base.yml, tags : ["prometheus-base"] }
+- { include: prometheus_server.yml,  when : '"server" in flavor',  tags : ["prometheus-server"] }
+- { include: prometheus_alertmanager.yml, when : '"alertmanager" in flavor',  tags : ["prometheus-alertmanager"] }
