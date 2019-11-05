@@ -1,0 +1,15 @@
+#####################################################################
+#         {{ ansible_managed }}
+#####################################################################
+[Unit]
+Description=Prometheus AlertManager
+After=network.target
+
+[Service]
+WorkingDirectory=/opt/prometheus
+Type=simple
+User=prometheus
+Restart=always
+RestartSec=10
+
+ExecStart=/opt/prometheus/bin/alertmanager --config.file=/opt/prometheus/etc/alertmanager.yml

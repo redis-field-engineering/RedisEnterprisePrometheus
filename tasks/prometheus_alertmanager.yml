@@ -1,1 +1,73 @@
 ---
+- name: download alertmanager
+  get_url:
+    url: "https://github.com/prometheus/alertmanager/releases/download/v{{alertmanager_version}}/alertmanager-{{alertmanager_version}}.linux-amd64.tar.gz"
+    dest: "{{ prometheus_download_dir }}/alertmanager-{{alertmanager_version}}.linux-amd64.tar.gz"
+
+- name: unarchive alertmanager
+  unarchive:
+    src: "{{ prometheus_download_dir }}/alertmanager-{{alertmanager_version}}.linux-amd64.tar.gz"
+    dest: "{{ prometheus_install_dir }}/software/"
+    creates: "{{ prometheus_install_dir }}/software/alertmanager-{{alertmanager_version}}.linux-amd64"
+    remote_src: True
+
+- name: alertmanager perms
+  file:
+    path: "{{ prometheus_install_dir }}/software/alertmanager-{{alertmanager_version}}.linux-amd64/alertmanager"
+    owner: prometheus
+    mode: 0755
+    state: file
+
+- name: alertmanager symlink
+  file:
+    src: "{{ prometheus_install_dir }}/software/alertmanager-{{alertmanager_version}}.linux-amd64/alertmanager"
+    dest: "{{ prometheus_install_dir }}/bin/alertmanager"
+    state: link
+
+- name:  alertmanager main config
+  template:
+    src: alertmanager.yml.j2
+    dest: "{{ prometheus_install_dir }}/etc/alertmanager.yml"
+    owner: root
+    group: root
+    mode: "0644"
+  notify:
+    - "prometheus_alertmanager_restart"
+
+- name: alertmanager templates
+  copy:
+    src: alertmanager.tmpl
+    dest: "{{ prometheus_install_dir }}/etc/alertmanager.tmpl"
+    owner: root
+    group: root
+    mode: "0644"
+  notify:
+    - "prometheus_alertmanager_restart"
+
+- name: alertmanager config
+  copy:
+    src: prometheus_alerting_rules.yml
+    dest: "{{ prometheus_install_dir }}/etc/prometheus_alerting_rules.yml"
+    owner: root
+    group: root
+    mode: "0644"
+  notify:
+    - "prometheus_alertmanager_restart"
+
+- name: alertmanager service
+  template:
+    src: "prometheus-alertmanager.service.j2"
+    dest: /lib/systemd/system/prometheus-alertmanager.service
+    owner: root
+    group: root
+    mode: 0644
+
+- name: alertmanager systemd reload
+  systemd:
+    daemon_reload: yes
+
+- name: enable alertmanager
+  systemd:
+    name: prometheus-alertmanager
+    state: started
+    enabled: yes

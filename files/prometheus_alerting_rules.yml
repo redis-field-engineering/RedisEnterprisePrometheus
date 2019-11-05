@@ -1,0 +1,11 @@
+groups:
+ - name: bdb-latency
+   rules:
+   - alert: listener_acc_latency
+     expr: listener_acc_latency > 1
+     for: 1m
+     labels:
+       severity: notification
+     annotations:
+       description: "High Latency - Cluster:{{ $labels.cluster }} Endpoint:{{$labels.endpoint}} Proxy:{{$labels.proxy}} "
+       runbook: http://www.mague.com

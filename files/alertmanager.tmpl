@@ -1,0 +1,14 @@
+{{ define "slack_link" }}{{ if .Alerts.Firing }}{{ (index .Alerts.Firing 0).GeneratorURL }}{{ else }}{{ (index .Alerts.Resolved 0).GeneratorURL }}{{ end }}{{ end }}
+
+
+{{ define "slack_title" }}{{ if .CommonAnnotations.summary }}*{{ .CommonAnnotations.summary }}*
+{{ end }}{{ end }}
+
+
+{{ define "__multi_alerts_description" }}{{ range .Alerts.Firing }}{{ if .Annotations.description }}- {{ .Annotations.description }}
+{{ end }}{{ end }}{{ range .Alerts.Resolved }}{{ if .Annotations.description }}- {{ .Annotations.description }}
+{{ end }}{{ end }}{{ end }}
+
+
+{{ define "slack_description" }}{{ if .Alerts.Firing }}{{ if .CommonAnnotations.runbook }}Runbook: {{ .CommonAnnotations.runbook }}
+{{ end }}{{ end }}{{ template "__multi_alerts_description" . }}{{ end }}

@@ -1,2 +1,7 @@
 ---
 # handlers file for RedisEnterprisePrometheus
+
+- name: prometheus_alertmanager_restart
+  command: systemctl restart prometheus-alertmanager
+- name: systemd_journald_restart
+  command: systemctl restart systemd-journald
