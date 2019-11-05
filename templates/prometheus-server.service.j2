@@ -1,0 +1,16 @@
+#####################################################################
+#         {{ ansible_managed }}
+#####################################################################
+[Unit]
+Description=Prometheus Server
+After=network.target
+
+[Service]
+Type=simple
+User=prometheus
+Restart=always
+RestartSec=10
+LimitNOFILE=65536
+
+ExecStart=/opt/prometheus/bin/prometheus --config.file=/opt/prometheus/etc/prometheus.yml --storage.tsdb.path=/opt/prometheus/data --web.external-url={{ prometheus_external_url }} --web.enable-admin-api
+

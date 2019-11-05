@@ -1,1 +1,98 @@
 ---
+- name: download prometheus binary
+  get_url:
+    url: "https://github.com/prometheus/prometheus/releases/download/v{{prometheus_server_version}}/prometheus-{{prometheus_server_version}}.linux-amd64.tar.gz"
+    dest: "{{prometheus_download_dir}}/server-{{prometheus_server_version}}_linux_amd64.tar.gz"
+
+- name: unarchive prometheus tarball
+  unarchive:
+    src: "{{prometheus_download_dir}}/server-{{prometheus_server_version}}_linux_amd64.tar.gz"
+    dest: "{{prometheus_install_dir}}/software"
+    creates: "{{prometheus_install_dir}}/software/prometheus-{{prometheus_server_version}}.linux-amd64"
+    remote_src: True
+
+- name: set binary perms
+  file:
+    path: "{{prometheus_install_dir}}/software/prometheus-{{prometheus_server_version}}.linux-amd64/{{item}}"
+    owner: prometheus
+    mode: 0755
+    state: file
+  with_items:
+    - prometheus
+    - promtool
+
+- name: set binary links for ease of use
+  file:
+    src: "{{prometheus_install_dir}}/software/prometheus-{{prometheus_server_version}}.linux-amd64/{{item}}"
+    dest: "{{prometheus_install_dir}}/bin/{{item}}"
+    state: link
+  with_items:
+    - prometheus
+    - promtool
+
+- name: template prometheus server config
+  template:
+    src: prometheus.yml.j2
+    dest: /opt/prometheus/etc/prometheus.yml
+    owner: prometheus
+    group: prometheus
+    mode: "0644"
+    validate: "{{prometheus_install_dir}}/bin/promtool check config %s"
+  notify:
+    - "prometheus_server_restart"
+
+- name: rules config
+  copy:
+    src: prometheus_alerting_rules.yml
+    dest: "{{ prometheus_install_dir }}/etc/prometheus_alerting_rules.yml"
+    owner: root
+    group: root
+    mode: "0644"
+  notify:
+    - "prometheus_server_restart"
+
+- name: Soft file ulimit for prometheus user
+  lineinfile:
+    path: /etc/security/limits.conf
+    regexp: '^prometheus\s+soft\s+nofile\s+65000'
+    line: "prometheus  soft  nofile  65000"
+
+- name: Hard file ulimit for prometheus user
+  lineinfile:
+    path: /etc/security/limits.conf
+    regexp: '^prometheus\s+hard\s+nofile\s+65000'
+    line: "prometheus  hard  nofile  65000"
+
+- name: Limit User logfile retention in systemd
+  lineinfile:
+    path: /etc/systemd/user.conf
+    regexp: '^SystemMaxFileSize=50M'
+    line: "SystemMaxFileSize=50M"
+  notify:
+    - systemd_journald_restart
+
+- name: Limit user logfile size in systemd
+  lineinfile:
+    path: /etc/systemd/user.conf
+    regexp: '^SystemMaxFiles=3'
+    line: "SystemMaxFiles=3"
+  notify:
+    - systemd_journald_restart
+
+- name: setup prometheus service
+  template:
+    src: "prometheus-server.service.j2"
+    dest: /lib/systemd/system/prometheus-server.service
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Prometheus Server Systemd Reload
+  systemd:
+    daemon_reload: yes
+
+- name: Prometheus Server Systemd Service
+  systemd:
+    name: prometheus-server
+    state: started
+    enabled: yes

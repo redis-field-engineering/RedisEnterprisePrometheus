@@ -44,16 +44,6 @@
   notify:
     - "prometheus_alertmanager_restart"
 
-- name: alertmanager config
-  copy:
-    src: prometheus_alerting_rules.yml
-    dest: "{{ prometheus_install_dir }}/etc/prometheus_alerting_rules.yml"
-    owner: root
-    group: root
-    mode: "0644"
-  notify:
-    - "prometheus_alertmanager_restart"
-
 - name: alertmanager service
   template:
     src: "prometheus-alertmanager.service.j2"

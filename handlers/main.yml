@@ -5,3 +5,5 @@
   command: systemctl restart prometheus-alertmanager
 - name: systemd_journald_restart
   command: systemctl restart systemd-journald
+- name: prometheus_server_restart
+  command: systemctl restart prometheus-server

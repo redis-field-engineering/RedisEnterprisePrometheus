@@ -1,0 +1,25 @@
+# {{ ansible_managed }}
+global:
+  scrape_interval:     10s
+  evaluation_interval: 10s
+
+scrape_configs:
+{% for key, value in redis_enterprise_servers.items() %}
+  - job_name: 'redis-{{key}}'
+    tls_config:
+      insecure_skip_verify: true
+    static_configs:
+      - targets: ['{{value}}:8070']
+{% endfor %}
+
+
+{% if "alertmanager" in flavor %}
+rule_files:
+  - /opt/prometheus/etc/prometheus_alerting_rules.yml
+
+alerting:
+  alertmanagers:
+  - static_configs:
+    - targets:
+      - localhost:9093
+{% endif %}
