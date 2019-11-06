@@ -41,7 +41,7 @@ groups:
        description: "DB Usage - Cluster: {{ $labels.cluster }} DB: {{$labels.bdb}} Usage: {{$value}}% full "
        runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/capacity.md
    - alert: DB full in 2 hours
-     expr:  round(predict_linear(bdb_used_memory[15m], 2 * 3600)/bdb_memory_limit) > 98
+     expr:  round(predict_linear(bdb_used_memory[15m], 2 * 3600)/bdb_memory_limit) > 0.98
      for: 30s
      labels:
        severity: critical
