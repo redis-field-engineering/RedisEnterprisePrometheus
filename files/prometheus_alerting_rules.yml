@@ -33,10 +33,18 @@ groups:
  - name: capacity
    rules:
    - alert: DB full
-     expr: 100*(bdb_used_memory/bdb_memory_limit) > 80
+     expr: round(100*(bdb_used_memory/bdb_memory_limit)) > 98
      for: 30s
      labels:
-       severity: notification
+       severity: critical
      annotations:
-       description: "DB Usage - Cluster: {{ $labels.cluster }} DB: {{$labels.bdb}} Latency: {{$value}} seconds"
+       description: "DB Usage - Cluster: {{ $labels.cluster }} DB: {{$labels.bdb}} Usage: {{$value}}% full "
+       runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/capacity.md
+   - alert: DB full in 2 hours
+     expr:  round(predict_linear(bdb_used_memory[15m], 2 * 3600)/bdb_memory_limit) > 98
+     for: 30s
+     labels:
+       severity: critical
+     annotations:
+       description: "DB Usage - Cluster: {{ $labels.cluster }} DB: {{$labels.bdb}} Usage: {{$value}}% in 2 hours "
        runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/capacity.md
