@@ -64,7 +64,7 @@ groups:
        description: "Node Down - Cluster: {{ $labels.cluster }} Expected Nodes: 3 Actual: {{$value}}"
        runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/nodes.md
    - alert: Node Persistent Storage
-     expr: round(100 * node_persistent_storage_free/node_persistent_storage_avail) >= 5
+     expr: round(100 * node_persistent_storage_free/node_persistent_storage_avail) <= 5
      for: 2m
      labels:
        severity: critical
@@ -72,7 +72,7 @@ groups:
        description: "Low on Persistent Storage - Cluster: {{ $labels.cluster }} Space Free: {{$value}}%"
        runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/nodes.md
    - alert: Node Ephemeral Storage
-     expr: round(100 * node_ephemeral_storage_free/node_ephemeral_storage_avail) >= 5
+     expr: round(100 * node_ephemeral_storage_free/node_ephemeral_storage_avail) <= 5
      for: 2m
      labels:
        severity: critical
@@ -80,7 +80,7 @@ groups:
        description: "Low on Ephemeral Storage - Cluster: {{ $labels.cluster }} Space Free: {{$value}}%"
        runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/nodes.md
    - alert: Node Free Memory
-     expr: round((100 * node_free_memory/node_available_memory)) >= 15
+     expr: round((100 * node_free_memory/node_available_memory)) <= 15
      for: 2m
      labels:
        severity: critical
