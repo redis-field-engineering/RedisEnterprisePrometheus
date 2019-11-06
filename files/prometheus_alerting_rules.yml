@@ -29,6 +29,7 @@ groups:
      annotations:
        description: "No Connections - Cluster: {{ $labels.cluster }} DB: {{$labels.bdb}} Connections: {{$value}}"
        runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/connections.md
+# TODO: too many connections alert
 
  - name: capacity
    rules:
@@ -48,3 +49,42 @@ groups:
      annotations:
        description: "DB Usage - Cluster: {{ $labels.cluster }} DB: {{$labels.bdb}} Usage: {{$value}}% in 2 hours "
        runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/capacity.md
+
+
+# Note: with mulitple clusters you probably want to change this per cluster
+# eg: count(node_up{cluster="redis-prod.example.com"})
+ - name: nodes
+   rules:
+   - alert: Node Not Responding
+     expr: count(node_up) != 3
+     for: 5m
+     labels:
+       severity: critical
+     annotations:
+       description: "Node Down - Cluster: {{ $labels.cluster }} Expected Nodes: 3 Actual: {{$value}}"
+       runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/nodes.md
+   - alert: Node Persistent Storage
+     expr: round(100 * node_persistent_storage_free/node_persistent_storage_avail) >= 5
+     for: 2m
+     labels:
+       severity: critical
+     annotations:
+       description: "Low on Persistent Storage - Cluster: {{ $labels.cluster }} Space Free: {{$value}}%"
+       runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/nodes.md
+   - alert: Node Ephemeral Storage
+     expr: round(100 * node_ephemeral_storage_free/node_ephemeral_storage_avail) >= 5
+     for: 2m
+     labels:
+       severity: critical
+     annotations:
+       description: "Low on Ephemeral Storage - Cluster: {{ $labels.cluster }} Space Free: {{$value}}%"
+       runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/nodes.md
+   - alert: Node Free Memory
+     expr: round((100 * node_free_memory/node_available_memory)) >= 15
+     for: 2m
+     labels:
+       severity: critical
+     annotations:
+       description: "Low on Memory - Cluster: {{ $labels.cluster }} Memory Free: {{$value}}%"
+       runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/nodes.md
+# TODO: node cpu measurements
