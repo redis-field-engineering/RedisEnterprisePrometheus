@@ -22,7 +22,7 @@ groups:
  - name: connections
    rules:
    - alert: zero_connections
-     expr: bdb_conns > 1
+     expr: bdb_conns < 1
      for: 30s
      labels:
        severity: notification
@@ -32,11 +32,11 @@ groups:
 
  - name: capacity
    rules:
-   - alert: bdb_avg_latency-1ms
-     expr: bdb_avg_latency > 0.001
+   - alert: DB full
+     expr: 100*(bdb_used_memory/bdb_memory_limit) > 80
      for: 30s
      labels:
        severity: notification
      annotations:
-       description: "High Latency - Cluster: {{ $labels.cluster }} DB: {{$labels.bdb}} Latency: {{$value}} seconds"
-       runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/connections.md
+       description: "DB Usage - Cluster: {{ $labels.cluster }} DB: {{$labels.bdb}} Latency: {{$value}} seconds"
+       runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/capacity.md
