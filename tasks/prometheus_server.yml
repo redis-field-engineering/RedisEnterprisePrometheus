@@ -39,6 +39,7 @@
     owner: root
     group: root
     mode: "0644"
+    validate: "{{prometheus_install_dir}}/bin/promtool check rules %s"
   notify:
     - "prometheus_server_restart"
 
