@@ -2,7 +2,7 @@ groups:
 
  - name: latency
    rules:
-   - alert: bdb_avg_latency-1ms
+   - alert: Average Latency more than 1ms
      expr: round(bdb_avg_latency*1000) > 1
      for: 30s
      labels:
@@ -10,7 +10,7 @@ groups:
      annotations:
        description: "High Latency - Cluster: {{ $labels.cluster }} DB: {{$labels.bdb}} Latency: {{$value}} ms"
        runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/latency.md
-   - alert: bdb_avg_latency-4ms
+   - alert: Average Latency more than 4 ms
      expr: round(bdb_avg_latency*1000) > 4
      for: 30s
      labels:
@@ -21,7 +21,7 @@ groups:
 
  - name: connections
    rules:
-   - alert: zero_connections
+   - alert: No Redis Connections
      expr: bdb_conns < 1
      for: 30s
      labels:
@@ -29,7 +29,14 @@ groups:
      annotations:
        description: "No Connections - Cluster: {{ $labels.cluster }} DB: {{$labels.bdb}} Connections: {{$value}}"
        runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/connections.md
-# TODO: too many connections alert
+   - alert: Excessive Connections
+     expr: bdb_conns > 64000
+     for: 30s
+     labels:
+       severity: critical
+     annotations:
+       description: "Too Many Connections - Cluster: {{ $labels.cluster }} DB: {{$labels.bdb}} Connections: {{$value}}"
+       runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/connections.md
 
  - name: capacity
    rules:
@@ -42,7 +49,7 @@ groups:
        description: "DB Usage - Cluster: {{ $labels.cluster }} DB: {{$labels.bdb}} Usage: {{$value}}% full "
        runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/capacity.md
    - alert: DB full in 2 hours
-     expr:  round(predict_linear(bdb_used_memory[15m], 2 * 3600)/bdb_memory_limit) > 0.98
+     expr: round(100*(bdb_used_memory/bdb_memory_limit)) < 98 and (predict_linear(bdb_used_memory[15m], 2 * 3600) / bdb_memory_limit) > 0.3 and round(predict_linear(bdb_used_memory[15m], 2 * 3600)/bdb_memory_limit) > 0.98
      for: 30s
      labels:
        severity: critical
@@ -95,3 +102,49 @@ groups:
      annotations:
        description: "High CPU Usage - Cluster: {{ $labels.cluster }} Usage: {{$value}}%"
        runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/nodes.md
+
+ - name: shards
+   rules:
+   - alert: Shard CPU usage is excessive
+     expr: redis_process_cpu_usage_percent >= 80
+     for: 1m
+     labels:
+       severity: notification
+     annotations:
+       description: "Busy Shard -Cluster: {{ $labels.cluster }} Shard: {{$labels.redis}} Node: {{$labels.node}} CPU: {{$value}}%"
+       runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/shards.md
+   - alert: Hot Master Shard
+     expr: redis_process_cpu_usage_percent{role="master"} > 0.75 and redis_process_cpu_usage_percent{role="master"} > on (bdb) group_left() (avg by (bdb)(redis_process_cpu_usage_percent{role="master"}) + on(bdb) 1.2 * stddev by (bdb) (redis_process_cpu_usage_percent{role="master"}))
+     for: 1m
+     labels:
+       severity: critical
+     annotations:
+       description: "Hot Shard - Cluster: {{ $labels.cluster }} Shard: {{$labels.redis}} Node: {{$labels.node}} CPU: {{$value}}%"
+       runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/shards.md
+   - alert: Master Shard down
+     expr: redis_master_link_status{role="slave"} < 1.0
+     for: 2m
+     labels:
+       severity: notification
+     annotations:
+       description: "Slave has no master - Cluster: {{ $labels.cluster }} Shard: {{$labels.redis}} Node: {{$labels.node}}"
+       runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/shards.md
+
+ - name: utilization
+   rules:
+   - alert: Hit ratio is low
+     expr: 100*bdb_read_hits/(bdb_read_hits+bdb_read_misses) < 50
+     for: 1m
+     labels:
+       severity: notification
+     annotations:
+       description: "Low Hit Ratio: {{ $labels.cluster }} DB: {{$labels.bdb}} Hit Ratio: {{$value}}%"
+       runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/utilization.md
+   - alert: Objects Being Evicted from Database
+     expr: bdb_evicted_objects > 1
+     for: 3m
+     labels:
+       severity: critical
+     annotations:
+       description: "Evictions Occuring: {{ $labels.cluster }} DB: {{$labels.bdb}} EvictionsPerSecond: {{$value}}"
+       runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/utilization.md
