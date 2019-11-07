@@ -1,6 +1,6 @@
 # Latency Run Book
 
-## Information
+## Average Latency
 
 ### Measurement
 
