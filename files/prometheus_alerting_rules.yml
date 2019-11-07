@@ -2,22 +2,22 @@ groups:
 
  - name: latency
    rules:
-   - alert: Average Latency more than 1ms
+   - alert: Average Latency Warning
      expr: round(bdb_avg_latency*1000) > 1
      for: 30s
      labels:
        severity: notification
      annotations:
        description: "High Latency - Cluster: {{ $labels.cluster }} DB: {{$labels.bdb}} Latency: {{$value}} ms"
-       runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/latency.md
-   - alert: Average Latency more than 4 ms
+       runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/latency.md#average-latency
+   - alert: Average Latency Critical
      expr: round(bdb_avg_latency*1000) > 4
      for: 30s
      labels:
        severity: critical
      annotations:
        description: "High Latency - Cluster: {{ $labels.cluster }} DB: {{$labels.bdb}} Latency: {{$value}} ms"
-       runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/latency.md
+       runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/latency.md#average-latency
 
  - name: connections
    rules:
@@ -28,7 +28,7 @@ groups:
        severity: notification
      annotations:
        description: "No Connections - Cluster: {{ $labels.cluster }} DB: {{$labels.bdb}} Connections: {{$value}}"
-       runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/connections.md
+       runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/connections.md#no-redis-connections
    - alert: Excessive Connections
      expr: bdb_conns > 64000
      for: 30s
@@ -36,7 +36,7 @@ groups:
        severity: critical
      annotations:
        description: "Too Many Connections - Cluster: {{ $labels.cluster }} DB: {{$labels.bdb}} Connections: {{$value}}"
-       runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/connections.md
+       runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/connections.md#excessive-connections
 
  - name: capacity
    rules:
@@ -47,7 +47,7 @@ groups:
        severity: critical
      annotations:
        description: "DB Usage - Cluster: {{ $labels.cluster }} DB: {{$labels.bdb}} Usage: {{$value}}% full "
-       runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/capacity.md
+       runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/capacity.md#db-full
    - alert: DB full in 2 hours
      expr: round(100*(bdb_used_memory/bdb_memory_limit)) < 98 and (predict_linear(bdb_used_memory[15m], 2 * 3600) / bdb_memory_limit) > 0.3 and round(predict_linear(bdb_used_memory[15m], 2 * 3600)/bdb_memory_limit) > 0.98
      for: 30s
@@ -55,7 +55,7 @@ groups:
        severity: critical
      annotations:
        description: "DB Usage - Cluster: {{ $labels.cluster }} DB: {{$labels.bdb}} Usage: {{$value}}% in 2 hours "
-       runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/capacity.md
+       runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/capacity.md#db-full-in-2-hours
 
 
 # Note: with mulitple clusters you probably want to change this per cluster
@@ -69,7 +69,7 @@ groups:
        severity: critical
      annotations:
        description: "Node Down - Cluster: {{ $labels.cluster }} Expected Nodes: 3 Actual: {{$value}}"
-       runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/nodes.md
+       runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/nodes.md#node-not-responding
    - alert: Node Persistent Storage
      expr: round(100 * node_persistent_storage_free/node_persistent_storage_avail) <= 5
      for: 2m
@@ -77,7 +77,7 @@ groups:
        severity: critical
      annotations:
        description: "Low on Persistent Storage - Cluster: {{ $labels.cluster }} Space Free: {{$value}}%"
-       runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/nodes.md
+       runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/nodes.md#node-persistent-storage
    - alert: Node Ephemeral Storage
      expr: round(100 * node_ephemeral_storage_free/node_ephemeral_storage_avail) <= 5
      for: 2m
@@ -85,7 +85,7 @@ groups:
        severity: critical
      annotations:
        description: "Low on Ephemeral Storage - Cluster: {{ $labels.cluster }} Space Free: {{$value}}%"
-       runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/nodes.md
+       runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/nodes.md#node-ephemeral-storage
    - alert: Node Free Memory
      expr: round((100 * node_free_memory/node_available_memory)) <= 15
      for: 2m
@@ -93,7 +93,7 @@ groups:
        severity: critical
      annotations:
        description: "Low on Memory - Cluster: {{ $labels.cluster }} Memory Free: {{$value}}%"
-       runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/nodes.md
+       runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/nodes.md#node-free-memory
    - alert: Node CPU Usage
      expr: round(1-node_cpu_idle)*100 >= 80
      for: 2m
@@ -101,7 +101,7 @@ groups:
        severity: critical
      annotations:
        description: "High CPU Usage - Cluster: {{ $labels.cluster }} Usage: {{$value}}%"
-       runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/nodes.md
+       runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/nodes.md#node-cpu-usage
 
  - name: shards
    rules:
@@ -112,7 +112,7 @@ groups:
        severity: notification
      annotations:
        description: "Busy Shard -Cluster: {{ $labels.cluster }} Shard: {{$labels.redis}} Node: {{$labels.node}} CPU: {{$value}}%"
-       runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/shards.md
+       runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/shards.md#shard-cpu-usage-is-excessive
    - alert: Hot Master Shard
      expr: redis_process_cpu_usage_percent{role="master"} > 0.75 and redis_process_cpu_usage_percent{role="master"} > on (bdb) group_left() (avg by (bdb)(redis_process_cpu_usage_percent{role="master"}) + on(bdb) 1.2 * stddev by (bdb) (redis_process_cpu_usage_percent{role="master"}))
      for: 1m
@@ -120,7 +120,7 @@ groups:
        severity: critical
      annotations:
        description: "Hot Shard - Cluster: {{ $labels.cluster }} Shard: {{$labels.redis}} Node: {{$labels.node}} CPU: {{$value}}%"
-       runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/shards.md
+       runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/shards.md#hot-master-shard
    - alert: Master Shard down
      expr: redis_master_link_status{role="slave"} < 1.0
      for: 2m
@@ -128,7 +128,7 @@ groups:
        severity: notification
      annotations:
        description: "Slave has no master - Cluster: {{ $labels.cluster }} Shard: {{$labels.redis}} Node: {{$labels.node}}"
-       runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/shards.md
+       runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/shards.md#master-shard-down
 
  - name: utilization
    rules:
@@ -139,7 +139,7 @@ groups:
        severity: notification
      annotations:
        description: "Low Hit Ratio: {{ $labels.cluster }} DB: {{$labels.bdb}} Hit Ratio: {{$value}}%"
-       runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/utilization.md
+       runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/utilization.md#hit-ratio-is-low
    - alert: Objects Being Evicted from Database
      expr: bdb_evicted_objects > 1
      for: 3m
@@ -147,4 +147,4 @@ groups:
        severity: critical
      annotations:
        description: "Evictions Occuring: {{ $labels.cluster }} DB: {{$labels.bdb}} EvictionsPerSecond: {{$value}}"
-       runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/utilization.md
+       runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/utilization.md#objects-being-evicted-from-database

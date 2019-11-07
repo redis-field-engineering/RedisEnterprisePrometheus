@@ -4,24 +4,26 @@
 
 ### Measurement
 
+```
 bdb_avg_latency
+```
 
 ### Description
 
 Average latency of operations on the database from the time the request hits the Enterprise proxy until the request is returned. Measured in seconds
 
-## Escalations
+### Escalations
 
 Notify the application support team including the cluster name and BDB number
 
-## Possible Causes
+### Possible Causes
 
 Cause | Check 
 --- | ---
 Possible spike in activity | Check the operations per second graphs in Grafana or Enterprise UI
 Slow running queries | Check the slow log in the Redis Enterprise UI for the database
 
-## Remediation Steps
+### Remediation Steps
 
 Action | Method 
 --- | ---
