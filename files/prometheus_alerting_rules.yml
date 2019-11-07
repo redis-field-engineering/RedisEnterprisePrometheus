@@ -3,20 +3,20 @@ groups:
  - name: latency
    rules:
    - alert: bdb_avg_latency-1ms
-     expr: bdb_avg_latency > 0.001
+     expr: round(bdb_avg_latency*1000) > 1
      for: 30s
      labels:
        severity: notification
      annotations:
-       description: "High Latency - Cluster: {{ $labels.cluster }} DB: {{$labels.bdb}} Latency: {{$value}} seconds"
+       description: "High Latency - Cluster: {{ $labels.cluster }} DB: {{$labels.bdb}} Latency: {{$value}} ms"
        runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/latency.md
    - alert: bdb_avg_latency-4ms
-     expr: bdb_avg_latency > 0.004
+     expr: round(bdb_avg_latency*1000) > 4
      for: 30s
      labels:
        severity: critical
      annotations:
-       description: "High Latency - Cluster: {{ $labels.cluster }} DB: {{$labels.bdb}} Latency: {{$value}} seconds"
+       description: "High Latency - Cluster: {{ $labels.cluster }} DB: {{$labels.bdb}} Latency: {{$value}} ms"
        runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/latency.md
 
  - name: connections
@@ -87,4 +87,11 @@ groups:
      annotations:
        description: "Low on Memory - Cluster: {{ $labels.cluster }} Memory Free: {{$value}}%"
        runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/nodes.md
-# TODO: node cpu measurements
+   - alert: Node CPU Usage
+     expr: round(1-node_cpu_idle)*100 >= 80
+     for: 2m
+     labels:
+       severity: critical
+     annotations:
+       description: "High CPU Usage - Cluster: {{ $labels.cluster }} Usage: {{$value}}%"
+       runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/nodes.md
