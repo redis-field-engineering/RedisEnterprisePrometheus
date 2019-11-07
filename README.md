@@ -15,4 +15,20 @@ Example monitoring setup for Prometheus
 ## Views
 
 1.  [Prometheus](http://localhost:9090/)
-1.  [Alert Manager](http://localhost:9093/)
+2.  [Alert Manager](http://localhost:9093/)
+
+## Contents
+
+This will add a recommended set of monitoring rules to prometheus for Redis Enterprise clusters.
+
+These rules are not all inclusive and some may need to be disabled or thresholds modified.
+
+All alerts will contain a link to the runbooks.  Sample run books have been included separated by alert types and contain detailed information on what is being monitored and why
+
+
+- [Capacity](./runbooks/capacity.md)
+- [Connections](./runbooks/connections.md)
+- [Latency](./runbooks/latency.md)
+- [Nodes](./runbooks/nodes.md)
+- [Shards](./runbooks/shards.md)
+- [Utilization](./runbooks/utilization.md)

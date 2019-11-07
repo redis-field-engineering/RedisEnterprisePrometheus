@@ -45,4 +45,4 @@ Notify the application support team including the cluster and db number
 
 ### Remidations 
 
-See (docs)[https://docs.redislabs.com/latest/rs/administering/database-operations/eviction-policy/] on Eviction policy for more information
+See [docs](https://docs.redislabs.com/latest/rs/administering/database-operations/eviction-policy/) on Eviction policy for more information
