@@ -5,7 +5,7 @@
 ### Measurement
 
 ```
-bdb_conns
+bdb_conns < 1
 ```
 
 ### Description
@@ -30,7 +30,7 @@ Host firewall | Ensure the Redis Enterprise hosts allow the DB port to connect
 ### Measurement
 
 ```
-bdb_conns
+bdb_conns > 64000
 ```
 
 ### Description
