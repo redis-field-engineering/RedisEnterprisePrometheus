@@ -38,6 +38,25 @@ groups:
        description: "Too Many Connections - Cluster: {{ $labels.cluster }} DB: {{$labels.bdb}} Connections: {{$value}}"
        runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/connections.md#excessive-connections
 
+ - name: throughput
+   rules:
+   - alert: No Redis Requests
+     expr: bdb_total_req < 1
+     for: 30s
+     labels:
+       severity: critical
+     annotations:
+       description: "Too few Redis operations - Cluster: {{ $labels.cluster }} DB: {{$labels.bdb}}  {{$value}} (ops/sec)"
+       runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/throughput.md#no-redis-requests
+   - alert: Excessive Redis Requests
+     expr: bdb_total_req > 1000000
+     for: 30s
+     labels:
+       severity: notification
+     annotations:
+       description: "Too Many Redis Operations - Cluster: {{ $labels.cluster }} DB: {{$labels.bdb}} {{$value}} (ops/sec)"
+       runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/throughput.md#excessive-redis-requests
+
  - name: capacity
    rules:
    - alert: DB full

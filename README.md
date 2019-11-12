@@ -32,3 +32,4 @@ All alerts will contain a link to the runbooks.  Sample run books have been incl
 - [Nodes](./runbooks/nodes.md)
 - [Shards](./runbooks/shards.md)
 - [Utilization](./runbooks/utilization.md)
+- [Throughput](./runbooks/throughput.md)
