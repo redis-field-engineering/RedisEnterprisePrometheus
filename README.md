@@ -9,7 +9,7 @@ Example monitoring setup for Prometheus
 
 ## Setup Data collection
 
-1. copy ansible/vars/main.yml.example to ansible/vars/main.yml and edit the file
+1. edit the file defaults/main.yml and change "azure1.mague.com" to the name of the cluster that you wish to monitor
 2. vagrant up --provision
 
 ## Views
@@ -33,3 +33,9 @@ All alerts will contain a link to the runbooks.  Sample run books have been incl
 - [Shards](./runbooks/shards.md)
 - [Utilization](./runbooks/utilization.md)
 - [Throughput](./runbooks/throughput.md)
+
+## Future Improvements
+
+- add CRDB stats as they are now available
+- Find a way to detect stuck state machine reliably
+- integration with 3rd Party services
