@@ -34,6 +34,12 @@ All alerts will contain a link to the runbooks.  Sample run books have been incl
 - [Utilization](./runbooks/utilization.md)
 - [Throughput](./runbooks/throughput.md)
 
+## Integrations
+
+<img src="docs/alerts.png" alt="alerts_dashboard"/>
+
+Grafana Dasboard for the Alerts is [available](https://github.com/Redislabs-Solution-Architects/monitoring/blob/master/grafana/Alerts.json)
+
 ## Future Improvements
 
 - add CRDB stats as they are now available
