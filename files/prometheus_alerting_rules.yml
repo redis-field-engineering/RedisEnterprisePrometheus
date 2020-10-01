@@ -106,7 +106,7 @@ groups:
        description: "Low on Ephemeral Storage - Cluster: {{ $labels.cluster }} Space Free: {{$value}}%"
        runbook: https://github.com/Redislabs-Solution-Architects/RedisEnterprisePrometheus/blob/master/runbooks/nodes.md#node-ephemeral-storage
    - alert: Node Free Memory
-     expr: round((100 * node_free_memory/node_available_memory)) <= 15
+     expr: round((100 * node_available_memory/node_free_memory)) <= 15
      for: 2m
      labels:
        severity: critical

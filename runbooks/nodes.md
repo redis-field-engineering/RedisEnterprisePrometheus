@@ -85,7 +85,7 @@ Add more disk space or clean out uncessary files not owned by redislabs user on 
 ### Measurement
 
 ```
-round((100 * node_free_memory/node_available_memory)) <= 15
+round((100 * node_available_memory/node_free_memory)) <= 15
 ```
 
 ### Description
