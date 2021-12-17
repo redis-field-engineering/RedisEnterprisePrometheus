@@ -16,4 +16,4 @@ slack_webhook: http://localhost:2112
 slack_channel: alerts
 
 redis_enterprise_servers:
-  mague: azure1.mague.com
+  mague: mague.demo-azure.redislabs.com
