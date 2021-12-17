@@ -8,7 +8,7 @@ flavor:
 prometheus_install_dir: /opt/prometheus
 prometheus_download_dir: /var/tmp/prometheus
 
-prometheus_server_version: 2.13.1
+prometheus_server_version: 2.32.0
 prometheus_external_url: http://localhost:9090/
 alertmanager_version: 0.15.2
 
@@ -16,4 +16,4 @@ slack_webhook: http://localhost:2112
 slack_channel: alerts
 
 redis_enterprise_servers:
-  mague: azure1.mague.com
+  mague: mague.demo-azure.redislabs.com

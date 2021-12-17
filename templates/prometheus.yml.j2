@@ -6,6 +6,7 @@ global:
 scrape_configs:
 {% for key, value in redis_enterprise_servers.items() %}
   - job_name: 'redis-{{key}}'
+    follow_redirects: false
     tls_config:
       insecure_skip_verify: true
     static_configs:
